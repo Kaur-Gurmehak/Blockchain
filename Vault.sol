@@ -16,7 +16,7 @@ contract Vault {
 
     // Withdraw function 
     function withdraw(uint256 amount) external {
-    #check-effects-interaction
+    // check-effects-interaction
         require(balances[msg.sender] >= amount, "Insufficient balance");
         balances[msg.sender] -= amount;
         (bool sent, ) = payable(msg.sender).call{value: amount}("");
