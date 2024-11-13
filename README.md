@@ -33,3 +33,9 @@ Checks: Before performing any actions, the contract verifies that the user has e
 Effects: After confirming the balance, the contract deducts the requested amount from the user’s balance. This update occurs before any Ether is sent, ensuring that even if a re-entrant call is made, it cannot withdraw more than the user’s remaining balance.
 
 Interactions: Only after updating the state (deducting the balance) does the contract interact with an external address (in this case, the user’s address) by sending the Ether. This order of operations minimizes the risk of a re-entrancy attack because any subsequent calls cannot affect the user’s balance in the contract.
+
+
+**References**
+
+https://github.com/ethereumbook/ethereumbook/blob/develop/09smart-contracts-security.asciidoc
+https://slowmist.medium.com/introduction-to-smart-contract-vulnerabilities-reentrancy-attack-2893ec8390a
