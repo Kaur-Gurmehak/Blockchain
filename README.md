@@ -7,7 +7,7 @@ balances: A mapping that stores the Ether balance for each user. The address of 
 ## Functions
 - deposit(): Allows users to deposit Ether into the contract. The contract ensures that the deposit amount is greater than zero. A Deposit event is emitted to log the transaction.
 
-- withdraw(uint256 amount): Allows users to withdraw Ether from their balance. This function checks if the user has sufficient balance, deducts the amount from their balance, and then transfers Ether. It follows the checks-effects-interactions pattern to prevent re-entrancy.
+- withdraw(uint256 amount): Allows users to withdraw Ether from their balance. This function checks if the user has sufficient balance, deducts the amount from their balance, and then transfers Ether. It follows the checks-effects-interactions pattern and mutex lock to prevent re-entrancy.
   
   Transfer: Sends Ether to the user’s address using (bool sent, ) = payable(msg.sender).call{value: amount}("");. This gas-safe approach reliably handles the transfer.
 
@@ -20,7 +20,13 @@ balances: A mapping that stores the Ether balance for each user. The address of 
 - Withdraw: Emitted when a user successfully withdraws Ether.
 
 ##  Preventing Re-Entrancy Attacks
-To prevent re-entrancy attacks, this contract follows the checks-effects-interactions pattern in its withdraw function. This is a critical design choice that helps protect against potential vulnerabilities. Here’s how it works:
+To prevent re-entrancy attacks, this contract follows the checks-effects-interactions pattern in its withdraw function. This is a critical design choice that helps protect against potential vulnerabilities. 
+
+### Reentrancy Mutex
+
+Reentrancy Mutex: It is a technique to add a state variable that locks the contract during code execution, preventing reentrant calls.The reEntrancyMutex flag is set to true when a withdrawal is in progress, blocking any reentrant calls until the withdrawal completes. This flag is reset only after the Ether transfer completes, preventing recursive calls.
+
+### Check-Effect-Interactions
 
 Checks: Before performing any actions, the contract verifies that the user has enough balance to withdraw the specified amount. If this check fails, the transaction is reverted.
 
