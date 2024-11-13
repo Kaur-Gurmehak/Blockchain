@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 contract Vault {
+    bool private reEntrancyMutex = false;
     mapping(address => uint256) private balances;
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
@@ -16,11 +17,15 @@ contract Vault {
 
     // Withdraw function 
     function withdraw(uint256 amount) external {
+        require(!reEntrancyMutex, "Re-entrancy detected");
     // check-effects-interaction
         require(balances[msg.sender] >= amount, "Insufficient balance");
         balances[msg.sender] -= amount;
+    // Reentrancy Mutex
+        reEntrancyMutex = true;
         (bool sent, ) = payable(msg.sender).call{value: amount}("");
         require(sent, "Transfer failed");
+        reEntrancyMutex = false;
 
         emit Withdraw(msg.sender, amount);
     }
